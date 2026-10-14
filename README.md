@@ -1,62 +1,92 @@
-# SharePlate — Good Food. Greater Impact.
+# SharePlate 🍽️
+### Good Food. Greater Impact.
 
-SharePlate is an enterprise-grade surplus-food rescue and redirection platform connecting food donors—such as university canteens, hostel messes, caterers, and restaurants—with recipient organizations—such as NGOs, shelters, and community kitchens.
+**Turning surplus food into meals that matter.**
 
----
+SharePlate is a food redistribution platform that helps food donors connect with organizations that can put surplus food to good use. It brings food listings, recipient matching, pickup coordination, and impact tracking into one place.
 
-## 🎨 Theme & Visual Identity (Theme 3)
+The idea is simple: **good food should reach people, not go to waste.**
 
-SharePlate uses the **Sage Green + Warm Cream + Terracotta** palette:
-- **Warm Cream & Soft Ivory (`#FDFBF7`, `#F7F3EC`)**: Primary body and canvas background.
-- **Muted Sage Green (`#5B7A60`, `#48644C`)**: Primary brand identity, environmental metrics, and sustainability indicators.
-- **Deep Forest-Charcoal (`#16221A`, `#1F2E23`)**: High-contrast typography and sticky navigation.
-- **Restrained Terracotta (`#C45D3E`, `#A84A2E`)**: Primary call-to-actions, highlights, and urgency markers.
-- **Accessible Indicators**: Emerald (`#10B981`) for verified status, Amber (`#F59E0B`) for pending, Rose (`#E11D48`) for safety alerts.
+## 🌍 The Problem
 
----
+Canteens, hostel messes, restaurants, and catering services can have surplus food at the end of the day. Meanwhile, NGOs, shelters, and community kitchens need a reliable way to discover available food and arrange timely pickups.
 
-## 🛠️ Technology Stack
+Without proper coordination, food can go to waste even when a potential recipient is nearby.
+
+SharePlate aims to bridge this gap through a single, organized platform.
+
+## 💡 Our Solution
+
+SharePlate connects donors and recipient organizations through a straightforward workflow:
+
+1. **List surplus food** — Add food details, available portions, storage information, and pickup deadlines.
+2. **Find suitable recipients** — Match donations with organizations based on their needs and availability.
+3. **Allocate food efficiently** — Allow a large donation to be shared among multiple recipients.
+4. **Coordinate and verify pickup** — Track collection and confirm successful handovers.
+5. **Measure the impact** — Record rescued food and related impact metrics from verified pickups.
+
+## ✨ What Makes SharePlate Different?
+
+### 1. Urgency-Based Food Rescue
+A priority-scoring engine helps identify donations that need faster action, taking factors such as perishability and deadlines into account. Food-safety checks are incorporated into the workflow.
+
+### 2. Smarter Recipient Matching
+The matching engine considers factors such as portion requirements, operating hours, and dietary compatibility to help identify suitable recipients.
+
+### 3. Split Donations, Reach More People
+A single donation does not have to go to just one organization. SharePlate supports partial allocations while tracking the remaining portions.
+
+### 4. Recovery When a Pickup Fails
+When a pickup cannot be completed, the recovery workflow can assess whether the donation remains eligible for reassignment. Food that is no longer suitable for redistribution can be recorded for composting.
+
+### 5. Verified Handover and Impact Tracking
+A private rescue code helps confirm a physical handover. Impact statistics are linked to verified pickups rather than simply counting listed donations.
+
+Together, these features aim to make food redistribution more organized, accountable, and responsive.
+
+## 🛠️ Tech Stack
 
 | Layer | Technologies |
-| :--- | :--- |
-| **Frontend** | React 18, Vite 6, Tailwind CSS 3.4 (Custom Theme 3 Tokens), Lucide Icons |
-| **Backend** | Node.js, Express 4.21, Cookie-Parser, CORS |
-| **Database & ORM** | SQLite, Prisma ORM 6.4 (ACID Transactions, Foreign Key Constraints, Safe Migrations) |
-| **Security & Auth** | Bcrypt password hashing, Persistent SQLite Server Sessions (`HttpOnly`, `SameSite=lax` cookies), RBAC |
-| **Testing** | Node.js native test runner (`node:test`, `node:assert/strict`) — 57 automated tests |
+|---|---|
+| Frontend | React, Vite, Tailwind CSS |
+| Backend | Node.js, Express |
+| Database | SQLite, Prisma ORM |
+| Authentication | Bcrypt password hashing, session-based authentication |
+| Authorization | Role-based access control |
+| Testing | Node.js test runner, Playwright |
 
----
+## 🧪 Testing
 
-## 🧩 5 Core Platform Innovations
+The current project test suite includes **57 automated backend tests** and **15 Playwright UI tests**.
 
-1. **Rescue Priority Score (RPS) Engine (`server/engines/priorityScore.js`)**
-   - Evaluates logistical urgency (0–100) based on food perishability, storage environment, and safe consumption deadlines.
-   - Enforces a mandatory **Food-Safety Gate**: uncertified batches or temperature danger zone abuse (5°C–60°C) are strictly blocked from listing.
-2. **Smart Recipient Matcher (`server/engines/smartMatcher.js`)**
-   - Matches donations to verified organizations by portion capacity, operating hours overlap, and dietary compatibility (e.g. strict vegetarian).
-   - Distance tags are labeled as illustrative estimates.
-3. **Split-and-Match Allocation (`server/engines/splitMatcher.js`)**
-   - Allows multiple recipients to claim partial portions of large surplus batches.
-   - Maintains the arithmetic invariant `allocatedPortions + remainingPortions === totalPortions` inside database transactions.
-4. **Failed-Pickup Recovery Engine (`server/engines/recoveryEngine.js`)**
-   - If a courier breaks down or fails to arrive, the system checks affirmative food safety and a minimum 45-minute dispatch buffer before secondary re-matching.
-   - Compromised food is routed to an audited composting log.
-5. **Verified Chain-of-Custody & Impact Ledger (`server/engines/`)**
-   - Private 6-character rescue codes (`SP-XXXXXX`) must be entered by the donor to verify physical handover.
-   - Impact metrics (meals rescued, kg diverted, CO₂e prevented, water saved) are aggregated **strictly from verified pickups**.
+Testing covers areas such as matching logic, allocation, recovery workflows, API behavior, authentication, and selected user-interface flows.
 
----
+The frontend production build has also been tested successfully.
 
-## 💻 Installation & Startup (Windows PowerShell)
+These results describe the current test coverage; they do not guarantee that every possible real-world scenario has been tested.
+
+## 🚀 Run SharePlate Locally
 
 ### Prerequisites
-- Node.js >= 18.0.0
-- npm >= 9.0.0
+- Node.js 18 or later
+- npm 9 or later
 
-### 1. Install Dependencies
-```powershell
-cd E:\SharePlate
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/Nandiniii29/SharePlate.git
+cd SharePlate
+```
+
+### 2. Install dependencies
+
+```bash
 npm install
+```
+
+If the root installation does not install the client and server dependencies, run:
+
+```bash
 cd server
 npm install
 cd ../client
@@ -64,84 +94,79 @@ npm install
 cd ..
 ```
 
-### 2. Configure Environment Variables
-Create `.env` inside `server/` (or copy from `.env.example`):
-```env
-PORT=5000
-NODE_ENV=development
-DATABASE_URL="file:./dev.db"
-SESSION_SECRET="shareplate_secure_session_secret_2026_production_key"
-FRONTEND_URL="http://localhost:5173"
-```
+### 3. Configure the environment
 
-### 3. Initialize Database & Migrate Legacy JSON
-```powershell
-cd E:\SharePlate\server
+Create `server/.env` using `server/.env.example` as a reference. Configure the database URL, frontend URL, port, and a unique session secret for your local environment.
+
+Do not use development credentials or session secrets in a production deployment.
+
+### 4. Set up the database
+
+```bash
+cd server
 npx prisma db push
 node prisma/seed.js
 cd ..
 ```
 
-### 4. Run Development Servers (Concurrent)
-```powershell
+Run the seed script only in a development database where its sample data is appropriate.
+
+### 5. Start the application
+
+```bash
 npm run dev
 ```
-- **Frontend App**: `http://localhost:5173`
-- **Backend API**: `http://localhost:5000`
 
----
+When both development servers start successfully, open:
 
-## 🧪 Testing & Production Build
+- Frontend: http://localhost:5173
+- Backend API: http://localhost:5000
 
-### Run the Full Test Suite (57 Automated Tests)
-```powershell
+### 6. Run tests and build
+
+Run the automated test suite:
+
+```bash
 npm test
 ```
-*Executes all test suites:*
-- RPS Engine unit tests
-- Smart Matcher unit tests
-- Split-and-Match allocation tests
-- Failed-Pickup Recovery engine tests
-- REST API & persistence test suite
-- Authentication, roles, notifications & moderation test suite
-- End-to-end live verification & QA suite
 
-### Production Client Build
-```powershell
+Run the frontend production build:
+
+```bash
 npm run build
 ```
-Generates production-optimized static assets in `client/dist/`.
+
+For the UI tests, use the Playwright configuration and setup instructions included in the repository.
+
+## 🔐 Security and Privacy
+
+SharePlate includes several security-focused design choices:
+
+- Passwords are hashed rather than stored as plain text.
+- Sessions use HTTP-only cookies.
+- Protected operations use role-based authorization.
+- Private pickup verification codes are kept out of public donation listings.
+- Administrative workflows support moderation of reported food-safety concerns.
+
+The project is a hackathon prototype. Production use would require further security review, deployment hardening, and operational monitoring.
+
+**Demo accounts:** If sample accounts are included in the seed script, use them only for local demonstrations. Never reuse their passwords or publish real credentials.
+
+## ⚠️ Current Limitations
+
+- Distance information is illustrative until reliable location data is integrated.
+- External email and SMS notifications require an additional delivery provider.
+- Production deployment requires HTTPS, secure cookie configuration, and appropriate server settings.
+- SQLite is suitable for the current prototype; larger deployments may require a different database and deployment architecture.
+
+## 🌱 Our Vision
+
+We want to make surplus-food redistribution easier to coordinate, easier to trust, and easier to measure.
+
+By bringing donors, recipient organizations, and pickup workflows together, SharePlate aims to help more usable food reach the people and communities that need it.
+
+**Less waste. Better coordination. Greater impact.**
 
 ---
 
-## 🔐 Default Demonstration Accounts
-
-The database seed initializes standard role accounts with genuine Bcrypt password hashes:
-
-| Role | Email | Password | Organization |
-| :--- | :--- | :--- | :--- |
-| **Donor** | `hostel3@shareplate.org` | `Password123!` | Hostel 3 Mess Council |
-| **Donor** | `dining@shareplate.org` | `Password123!` | Central Dining Services |
-| **Recipient** | `robinhooda@shareplate.org` | `Password123!` | Robin Hood Army (Campus Chapter) |
-| **Recipient** | `ashacommun@shareplate.org` | `Password123!` | Asha Community Kitchen & Shelter |
-| **Administrator** | `admin@shareplate.org` | `AdminSecure2026!` | SharePlate Platform Administration |
-
-*The Sign-In dialog also includes one-click demonstration login buttons.*
-
----
-
-## 🛡️ Security & Privacy Architecture
-
-- **Session Security**: Authenticated sessions are stored in the SQLite `Session` table and managed through `HttpOnly`, `SameSite=lax` cookies. No credentials, tokens, or session secrets are stored in `localStorage`.
-- **Private Code Masking**: Rescue verification codes are removed from all public listings and single donation lookups. Codes are accessible only to the claiming recipient organization on their private pickup pass.
-- **Role-Based Authorization**: Protected endpoints verify session roles (`DONOR`, `RECIPIENT`, `ADMIN`) before permitting write actions.
-- **Incident Moderation**: Administrators can investigate food-safety reports and suspend accounts via `PUT /api/admin/users/:id/status`.
-
----
-
-## ⚠️ Known Limitations & Deployment Requirements
-
-1. **Production Cookies**: In production environments (HTTPS), set `secure: true` on cookies and configure reverse proxy headers (`trust proxy`).
-2. **Multi-Region Scaling**: For multi-server clusters, replace SQLite with PostgreSQL by switching `provider = "postgresql"` in `prisma/schema.prisma`.
-3. **Notification Delivery**: In-app notifications are stored persistently in the database. For external SMS or SMTP email delivery, configure an external provider (e.g. SendGrid or Twilio) using webhook handlers.
-4. **Distance Calculations**: Proximity metrics are tagged as illustrative estimates until campus GIS mapping coordinates are integrated.
+*Built by Team QuadraMind for a hackathon project.*
