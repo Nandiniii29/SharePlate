@@ -169,4 +169,4 @@ By bringing donors, recipient organizations, and pickup workflows together, Shar
 
 ---
 
-*Built by Team QuadraMind for a hackathon project.*
+
