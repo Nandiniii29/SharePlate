@@ -1,0 +1,18 @@
+{
+  "name": "shareplate",
+  "version": "1.0.0",
+  "description": "Surplus food rescue platform for college campuses and communities",
+  "private": true,
+  "scripts": {
+    "install:all": "npm install && cd server && npm install && cd ../client && npm install",
+    "server": "cd server && node server.js",
+    "client": "cd client && npm run dev",
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "build": "cd client && npm run build",
+    "test": "cd server && node --test tests/*.test.js"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.64.0",
+    "concurrently": "^9.1.2"
+  }
+}

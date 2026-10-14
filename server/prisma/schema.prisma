@@ -1,0 +1,191 @@
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id              String         @id @default(cuid())
+  email           String         @unique
+  passwordHash    String
+  fullName        String
+  role            String         // 'DONOR', 'RECIPIENT', 'ADMIN'
+  organizationId  String?
+  phone           String?
+  status          String         @default("ACTIVE") // 'ACTIVE', 'SUSPENDED'
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+
+  organization    Organization?  @relation(fields: [organizationId], references: [id])
+  donations       Donation[]
+  allocations     Allocation[]
+  notifications   Notification[]
+  sessions        Session[]
+  incidentsReported Incident[]
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  sid       String   @unique
+  userId    String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Organization {
+  id                     String       @id
+  name                   String
+  type                   String       // 'MESS_CANTEEN', 'RESTAURANT', 'HOSTEL', 'CATERER', 'COMMUNITY_KITCHEN', 'SHELTER', 'YOUTH_VOLUNTEER_NETWORK', 'STUDENT_NGO'
+  contactPerson          String?
+  phone                  String?
+  email                  String?
+  location               String?
+  isVerified             Boolean      @default(true)
+  capacityMin            Int          @default(1)
+  capacityMax            Int          @default(200)
+  acceptsNonVeg          Boolean      @default(true)
+  operatingHoursStart    String?
+  operatingHoursEnd      String?
+  illustrativeDistanceKm Float?       @default(2.5)
+  notes                  String?
+  createdAt              DateTime     @default(now())
+  updatedAt              DateTime     @updatedAt
+
+  users                  User[]
+  donations              Donation[]
+}
+
+model Donation {
+  id                      String       @id
+  title                   String
+  description             String?
+  category                String?      @default("PREPARED_MEALS")
+  donorId                 String?
+  organizationId          String?
+  donorName               String
+  donorContact            String
+  location                String
+  foodType                String
+  storageCondition        String
+  totalPortions           Int
+  allocatedPortions       Int          @default(0)
+  remainingPortions       Int
+  status                  String       @default("AVAILABLE")
+  isVeg                   Boolean      @default(true)
+  dietaryInfo             String?
+  allergens               String?
+  pickupWindowStart       String
+  pickupWindowEnd         String
+  safeConsumptionDeadline DateTime
+  estimatedTransitMinutes Int          @default(20)
+  imageUrl                String?
+  isCertifiedSafe         Boolean      @default(true)
+  hasTemperatureAbuse     Boolean      @default(false)
+  sensoryInspectionPassed Boolean      @default(true)
+  certifiedBy             String?
+  safetyNotes             String?
+  priorityScore           Int          @default(50)
+  urgencyLevel            String       @default("MEDIUM")
+  eligibleForRescue       Boolean      @default(true)
+  priorityBreakdown       String?
+  recoveryAlert           String?
+  createdAt               DateTime     @default(now())
+  updatedAt               DateTime     @updatedAt
+
+  donor                   User?        @relation(fields: [donorId], references: [id])
+  organization            Organization? @relation(fields: [organizationId], references: [id])
+  allocations             Allocation[]
+  pickups                 Pickup[]
+  incidents               Incident[]
+}
+
+model Allocation {
+  id                      String       @id
+  donationId              String
+  recipientId             String
+  recipientUserId         String?
+  recipientName           String
+  portions                Int
+  notes                   String?
+  verificationCode        String
+  status                  String       @default("RESERVED")
+  releaseReason           String?
+  dispositionReason       String?
+  actualPortionsCollected Int?
+  verifiedAt              DateTime?
+  verifiedBy              String?
+  recoveryAttempts        Int          @default(0)
+  createdAt               DateTime     @default(now())
+  updatedAt               DateTime     @updatedAt
+
+  donation                Donation     @relation(fields: [donationId], references: [id], onDelete: Cascade)
+  recipientUser           User?        @relation(fields: [recipientUserId], references: [id])
+  pickups                 Pickup[]
+}
+
+model Pickup {
+  id                      String       @id
+  claimId                 String
+  donationId              String
+  donationTitle           String
+  donorName               String
+  recipientId             String
+  recipientName           String
+  portionsClaimed         Int
+  actualPortionsCollected Int
+  verifiedAt              DateTime     @default(now())
+  verifiedBy              String
+  verificationMethod      String       @default("SECURE_RESCUE_CODE_HANDSHAKE")
+  isPrototypeVerification Boolean      @default(false)
+  notes                   String?
+  createdAt               DateTime     @default(now())
+
+  donation                Donation     @relation(fields: [donationId], references: [id], onDelete: Cascade)
+  claim                   Allocation   @relation(fields: [claimId], references: [id], onDelete: Cascade)
+}
+
+model Notification {
+  id             String       @id @default(cuid())
+  userId         String?
+  recipientOrgId String?
+  title          String
+  message        String
+  type           String       // 'CLAIM_CREATED', 'CLAIM_CANCELLED', 'PICKUP_VERIFIED', 'PICKUP_FAILED', 'RECOVERY_ALERT', 'DEADLINE_ALERT', 'SYSTEM'
+  isRead         Boolean      @default(false)
+  link           String?
+  createdAt      DateTime     @default(now())
+
+  user           User?        @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model AuditEvent {
+  id             String       @id
+  type           String
+  donationId     String?
+  allocationId   String?
+  userId         String?
+  details        String
+  timestamp      DateTime     @default(now())
+}
+
+model Incident {
+  id               String       @id @default(cuid())
+  donationId       String?
+  allocationId     String?
+  reportedByUserId String?
+  title            String
+  description      String
+  severity         String       @default("MEDIUM")
+  status           String       @default("OPEN")
+  resolutionNotes  String?
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+
+  donation         Donation?    @relation(fields: [donationId], references: [id])
+  reportedByUser   User?        @relation(fields: [reportedByUserId], references: [id])
+}

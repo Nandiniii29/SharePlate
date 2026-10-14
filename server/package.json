@@ -1,0 +1,21 @@
+{
+  "name": "shareplate-server",
+  "version": "1.0.0",
+  "description": "SharePlate Backend API and Core Rescue Engines",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node --test tests/*.test.js"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.4.1",
+    "bcryptjs": "^3.0.3",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "express": "^4.21.2"
+  },
+  "devDependencies": {
+    "prisma": "^6.4.1"
+  }
+}
